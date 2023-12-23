@@ -6,8 +6,11 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { NzInputModule } from "ng-zorro-antd/input";
+import { EMPTY, catchError, of } from "rxjs";
+import { ERRORS_MESSAGES } from "src/app/config/api";
 import { ApiLoginData } from "src/app/models/api.model";
 import { AuthService } from "src/app/services/auth.service";
+import { updateControlsValidity } from "src/app/utils/update-controls-validity";
 
 @UntilDestroy()
 @Component({
@@ -18,6 +21,8 @@ import { AuthService } from "src/app/services/auth.service";
   imports: [CommonModule, ReactiveFormsModule, NzInputModule, NzButtonModule, NzFormModule],
 })
 export class LoginPageComponent {
+  public readonly errorMessages = ERRORS_MESSAGES;
+
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
@@ -35,11 +40,19 @@ export class LoginPageComponent {
 
       this.authService
         .login(this.loginForm.value as ApiLoginData)
-        .pipe(untilDestroyed(this))
+        .pipe(
+          catchError((err) => {
+            this.isLoggingIn = false;
+            return EMPTY;
+          }),
+          untilDestroyed(this)
+        )
         .subscribe(() => {
           this.isLoggingIn = false;
           this.router.navigate([""]);
         });
+    } else {
+      updateControlsValidity(this.loginForm);
     }
   }
 }

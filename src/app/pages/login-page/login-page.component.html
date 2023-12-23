@@ -1,14 +1,14 @@
 <h1>Вход в аккаунт</h1>
-<form nz-form [nzLayout]="'vertical'" [formGroup]="loginForm" (ngSubmit)="login()">
+<form nz-form [nzAutoTips]="errorMessages" [nzLayout]="'vertical'" [formGroup]="loginForm" (ngSubmit)="login()">
   <nz-form-item>
-    <nz-form-control nzErrorTip="Please input your username!">
-      <nz-form-label>Имя пользователя</nz-form-label>
-      <input formControlName="username" nz-input placeholder="ВВедите имя пользователя" />
+    <nz-form-control>
+      <nz-form-label nzFor="username">Имя пользователя</nz-form-label>
+      <input formControlName="username" nz-input placeholder="Введите имя пользователя" />
     </nz-form-control>
   </nz-form-item>
   <nz-form-item>
-    <nz-form-control nzErrorTip="Please input your Password!">
-      <nz-form-label>Пароль</nz-form-label>
+    <nz-form-control>
+      <nz-form-label nzFor="password">Пароль</nz-form-label>
       <input formControlName="password" nz-input type="password" placeholder="Введите пароль" />
     </nz-form-control>
   </nz-form-item>

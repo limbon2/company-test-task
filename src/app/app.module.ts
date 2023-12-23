@@ -10,13 +10,19 @@ import ru from "@angular/common/locales/ru";
 
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
+import { DeveloperInterceptor } from "./interceptors/developer.interceptor";
+import { ErrorMessagesInterceptor } from "./interceptors/error-messages.interceptor";
 
 registerLocaleData(ru);
 
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, BrowserAnimationsModule],
-  providers: [{ provide: NZ_I18N, useValue: ru_RU }],
+  providers: [
+    { provide: NZ_I18N, useValue: ru_RU },
+    { provide: HTTP_INTERCEPTORS, useClass: DeveloperInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorMessagesInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

@@ -14,11 +14,12 @@ import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
 import { Observable, switchMap, tap } from "rxjs";
-import { MAX_TASKS_PER_PAGE } from "src/app/config/api";
+import { ERRORS_MESSAGES, MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
 import { CreateTaskData, Task, TaskStatus, UpdateTaskData } from "src/app/models/task.model";
 import { TasksService } from "src/app/services/tasks.service";
 import { AuthService } from "src/app/services/auth.service";
+import { updateControlsValidity } from "src/app/utils/update-controls-validity";
 
 @UntilDestroy()
 @Component({
@@ -45,6 +46,7 @@ import { AuthService } from "src/app/services/auth.service";
 })
 export class TasksPageComponent implements OnInit {
   public readonly taskStatuses = TaskStatus;
+  public readonly errorMessages = ERRORS_MESSAGES;
 
   private readonly tasksService = inject(TasksService);
   private readonly fb = inject(FormBuilder);
@@ -59,7 +61,7 @@ export class TasksPageComponent implements OnInit {
   public tasks: Task[] = [];
   public taskCount: number = 0;
 
-  public taskForm = this.fb.group({
+  public readonly taskForm = this.fb.group({
     text: this.fb.control("", { validators: [Validators.required] }),
     email: this.fb.control("", { validators: [Validators.required, Validators.email] }),
     username: this.fb.control("", { validators: [Validators.required] }),
@@ -80,8 +82,8 @@ export class TasksPageComponent implements OnInit {
       .pipe(
         tap((params) => {
           this.query.page = Number(params["page"]) || 1;
-          this.query.sort_direction = params["sort_direction"] ?? "desc";
-          this.query.sort_field = params["sort_field"];
+          this.query.sort_direction = params["sort_direction"] ?? "asc";
+          this.query.sort_field = params["sort_field"] ?? "id";
         }),
         switchMap(() => this.fetchTasks()),
         untilDestroyed(this)
@@ -132,6 +134,8 @@ export class TasksPageComponent implements OnInit {
 
           this.notifications.create("success", "Успех!", "Задача успешно создана");
         });
+    } else {
+      updateControlsValidity(this.taskForm);
     }
   }
 
@@ -151,6 +155,8 @@ export class TasksPageComponent implements OnInit {
 
           this.notifications.create("success", "Успех!", "Задача успешно обновлена");
         });
+    } else {
+      updateControlsValidity(this.taskForm);
     }
   }
 

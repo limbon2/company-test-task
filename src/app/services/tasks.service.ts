@@ -9,7 +9,6 @@ import {
   ApiResponse,
 } from "../models/api.model";
 import { API_URL } from "../config/api";
-import { appendDeveloper } from "../utils/append-developer";
 import { AuthService } from "./auth.service";
 
 @Injectable({ providedIn: "root" })
@@ -18,7 +17,7 @@ export class TasksService {
   private readonly authService = inject(AuthService);
 
   public fetchTasks(params: ApiFetchTasksQueryParams): Observable<{ tasks: Task[]; count: number }> {
-    return this.http.get<ApiFetchTasksResponse>(`${API_URL}/`, { params: appendDeveloper(params) }).pipe(
+    return this.http.get<ApiFetchTasksResponse>(`${API_URL}/`, { params }).pipe(
       map((response) => ({
         tasks: response.message.tasks,
         count: Number(response.message.total_task_count),
@@ -33,7 +32,7 @@ export class TasksService {
     formData.append("text", data.text);
 
     return this.http
-      .post<ApiCreateTaskResponse>(`${API_URL}/create/`, formData, { params: appendDeveloper({}) })
+      .post<ApiCreateTaskResponse>(`${API_URL}/create/`, formData)
       .pipe(map((response) => response.message));
   }
 
@@ -45,8 +44,6 @@ export class TasksService {
       formData.append("token", this.authService.token);
     }
 
-    return this.http
-      .post<ApiResponse<null>>(`${API_URL}/edit/${id}`, formData, { params: appendDeveloper({}) })
-      .pipe(map(() => {}));
+    return this.http.post<ApiResponse<null>>(`${API_URL}/edit/${id}`, formData).pipe(map(() => {}));
   }
 }
