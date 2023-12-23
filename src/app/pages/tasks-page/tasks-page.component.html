@@ -1,21 +1,50 @@
-<div>
-  <div *ngFor="let task of tasks">
-    <div>{{ task.username }}</div>
-    <div>{{ task.email }}</div>
-    <div>{{ task.status }}</div>
-    <div>{{ task.text }}</div>
-  </div>
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Новая задача"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="createTask()"
+  nzOkText="Создать"
+  [nzOkLoading]="isCreating"
+>
+  <ng-container *nzModalContent>
+    <div class="form">
+      <form nz-form [formGroup]="taskForm" nzLayout="vertical">
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">Email</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail">
+            <input nz-input formControlName="email" id="email" placeholder="Введите email" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="username">Пользователь</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid username">
+            <input nz-input formControlName="username" id="username" placeholder="Введите имя пользователя" />
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="">Текст</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <textarea nz-input formControlName="text" id="text" placeholder="Введите текст задачи"></textarea>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+  </ng-container>
+</nz-modal>
+
+<div class="header">
+  <h1>Задачи</h1>
+  <button nz-button [nzType]="'primary'" (click)="showModal()"><span>Добавить +</span></button>
 </div>
-
-<form [formGroup]="taskForm" (ngSubmit)="createTask($event)">
-  <input id="email" name="email" type="email" placeholder="Email" formControlName="email" />
-  <input id="username" name="username" type="text" placeholder="Username" formControlName="username" />
-  <textarea id="text" name="text" type="text" placeholder="Text" formControlName="text"></textarea>
-  <button type="submit">Create</button>
-</form>
-
-<ta-pagination
-  [pageCount]="maxPages"
-  [activePage]="query.page ?? 1"
-  (pageChange)="onPageChange($event)"
-></ta-pagination>
+<div class="tasks">
+  <nz-card class="task" *ngFor="let task of tasks" [nzTitle]="task.username" [nzExtra]="task.email">
+    <p>{{ task.text }}</p>
+  </nz-card>
+</div>
+<div class="pagination">
+  <nz-pagination
+    [nzPageIndex]="query.page"
+    [nzTotal]="maxPages * 10"
+    (nzPageIndexChange)="onPageChange($event)"
+  ></nz-pagination>
+</div>

@@ -1,10 +1,15 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
-import { Observable, map, switchMap, tap } from "rxjs";
-import { PaginationComponent } from "src/app/components/pagination/pagination.component";
+import { NzCardModule } from "ng-zorro-antd/card";
+import { NzFormModule } from "ng-zorro-antd/form";
+import { NzInputModule } from "ng-zorro-antd/input";
+import { NzModalModule } from "ng-zorro-antd/modal";
+import { NzButtonModule } from "ng-zorro-antd/button";
+import { NzPaginationModule } from "ng-zorro-antd/pagination";
+import { Observable, switchMap, tap } from "rxjs";
 import { MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
 import { CreateTaskData, Task } from "src/app/models/task.model";
@@ -16,7 +21,17 @@ import { TasksService } from "src/app/services/tasks.service";
   templateUrl: "./tasks-page.component.html",
   styleUrls: ["./tasks-page.component.scss"],
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule, PaginationComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    NzCardModule,
+    NzFormModule,
+    NzPaginationModule,
+    NzInputModule,
+    NzButtonModule,
+    NzModalModule,
+  ],
 })
 export class TasksPageComponent implements OnInit {
   private readonly tasksService = inject(TasksService);
@@ -29,9 +44,16 @@ export class TasksPageComponent implements OnInit {
   public tasks: Task[] = [];
   public taskCount: number = 0;
 
-  public taskForm = this.fb.group<CreateTaskData>({ text: "", email: "", username: "" });
+  public taskForm = this.fb.group({
+    text: this.fb.control("", { validators: [Validators.required] }),
+    email: this.fb.control("", { validators: [Validators.required, Validators.email] }),
+    username: this.fb.control("", { validators: [Validators.required] }),
+  });
 
   public maxPages: number = 0;
+
+  public isVisible: boolean = false;
+  public isCreating: boolean = false;
 
   public ngOnInit(): void {
     this.route.queryParams
@@ -45,15 +67,6 @@ export class TasksPageComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe();
-  }
-
-  public createTask(event: SubmitEvent): void {
-    event.preventDefault();
-
-    this.tasksService
-      .createTask(this.taskForm.value as CreateTaskData)
-      .pipe(untilDestroyed(this))
-      .subscribe((task) => this.tasks.push(task));
   }
 
   public onPageChange(page: number): void {
@@ -70,5 +83,29 @@ export class TasksPageComponent implements OnInit {
         this.maxPages = Math.ceil(this.taskCount / MAX_TASKS_PER_PAGE);
       })
     );
+  }
+
+  public showModal(): void {
+    this.isVisible = true;
+  }
+
+  public createTask(): void {
+    if (this.taskForm.valid) {
+      this.isCreating = true;
+      this.tasksService
+        .createTask(this.taskForm.value as CreateTaskData)
+        .pipe(
+          switchMap(() => this.fetchTasks()),
+          untilDestroyed(this)
+        )
+        .subscribe(() => {
+          this.isCreating = false;
+          this.isVisible = false;
+        });
+    }
+  }
+
+  public handleCancel(): void {
+    this.isVisible = false;
   }
 }
