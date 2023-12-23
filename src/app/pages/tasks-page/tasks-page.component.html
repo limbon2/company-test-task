@@ -1,0 +1,15 @@
+<div>
+  <div *ngFor="let task of tasks">
+    <div>{{ task.username }}</div>
+    <div>{{ task.email }}</div>
+    <div>{{ task.status }}</div>
+    <div>{{ task.text }}</div>
+  </div>
+</div>
+
+<form [formGroup]="taskForm" (ngSubmit)="createTask($event)">
+  <input id="email" name="email" type="email" placeholder="Email" formControlName="email" />
+  <input id="username" name="username" type="text" placeholder="Username" formControlName="username" />
+  <textarea id="text" name="text" type="text" placeholder="Text" formControlName="text"></textarea>
+  <button type="submit">Create</button>
+</form>
