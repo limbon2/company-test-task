@@ -8,12 +8,14 @@ import { NzFormModule } from "ng-zorro-antd/form";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzModalModule } from "ng-zorro-antd/modal";
 import { NzButtonModule } from "ng-zorro-antd/button";
+import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
 import { Observable, switchMap, tap } from "rxjs";
 import { MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
 import { CreateTaskData, Task } from "src/app/models/task.model";
 import { TasksService } from "src/app/services/tasks.service";
+import { AuthService } from "src/app/services/auth.service";
 
 @UntilDestroy()
 @Component({
@@ -31,6 +33,7 @@ import { TasksService } from "src/app/services/tasks.service";
     NzInputModule,
     NzButtonModule,
     NzModalModule,
+    NzSkeletonModule,
   ],
 })
 export class TasksPageComponent implements OnInit {
@@ -38,6 +41,8 @@ export class TasksPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+
+  public readonly authService = inject(AuthService);
 
   public readonly query: ApiFetchTasksQueryParams = {};
 

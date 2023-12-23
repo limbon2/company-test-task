@@ -1,9 +1,9 @@
 <nz-modal
-  [(nzVisible)]="isVisible"
   nzTitle="Новая задача"
+  nzOkText="Создать"
+  [(nzVisible)]="isVisible"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="createTask()"
-  nzOkText="Создать"
   [nzOkLoading]="isCreating"
 >
   <ng-container *nzModalContent>
@@ -32,21 +32,36 @@
   </ng-container>
 </nz-modal>
 
-<ng-container *ngIf="!isFetching">
-  <div class="header">
-    <h1>Задачи</h1>
-    <button nz-button [nzType]="'primary'" (click)="showModal()"><span>Добавить +</span></button>
-  </div>
-  <div class="tasks">
-    <nz-card class="task" *ngFor="let task of tasks" [nzTitle]="task.username" [nzExtra]="task.email">
-      <p>{{ task.text }}</p>
-    </nz-card>
-  </div>
-  <div class="pagination">
-    <nz-pagination
-      [nzPageIndex]="query.page"
-      [nzTotal]="maxPages * 10"
-      (nzPageIndexChange)="onPageChange($event)"
-    ></nz-pagination>
+<div class="header">
+  <h1>Poormans Task Board</h1>
+  <button *ngIf="!authService.token" nz-button routerLink="login">Войти</button>
+  <button *ngIf="!!authService.token" nz-button (click)="authService.logout()">Выйти</button>
+</div>
+
+<ng-container>
+  <div class="tasks-wrapper">
+    <div class="tasks-header">
+      <h2>Задачи</h2>
+      <button nz-button [nzType]="'primary'" (click)="showModal()" [disabled]="isFetching">
+        <span>Добавить +</span>
+      </button>
+    </div>
+    <div class="tasks">
+      <ng-container *ngFor="let task of tasks">
+        <nz-card class="task" [nzTitle]="task.username" [nzExtra]="task.email">
+          <p>{{ task.text }}</p>
+        </nz-card>
+      </ng-container>
+      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
+      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
+      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
+    </div>
+    <div class="pagination" *ngIf="!isFetching">
+      <nz-pagination
+        [nzPageIndex]="query.page"
+        [nzTotal]="maxPages * 10"
+        (nzPageIndexChange)="onPageChange($event)"
+      ></nz-pagination>
+    </div>
   </div>
 </ng-container>
