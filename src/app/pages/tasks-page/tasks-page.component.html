@@ -32,19 +32,21 @@
   </ng-container>
 </nz-modal>
 
-<div class="header">
-  <h1>Задачи</h1>
-  <button nz-button [nzType]="'primary'" (click)="showModal()"><span>Добавить +</span></button>
-</div>
-<div class="tasks">
-  <nz-card class="task" *ngFor="let task of tasks" [nzTitle]="task.username" [nzExtra]="task.email">
-    <p>{{ task.text }}</p>
-  </nz-card>
-</div>
-<div class="pagination">
-  <nz-pagination
-    [nzPageIndex]="query.page"
-    [nzTotal]="maxPages * 10"
-    (nzPageIndexChange)="onPageChange($event)"
-  ></nz-pagination>
-</div>
+<ng-container *ngIf="!isFetching">
+  <div class="header">
+    <h1>Задачи</h1>
+    <button nz-button [nzType]="'primary'" (click)="showModal()"><span>Добавить +</span></button>
+  </div>
+  <div class="tasks">
+    <nz-card class="task" *ngFor="let task of tasks" [nzTitle]="task.username" [nzExtra]="task.email">
+      <p>{{ task.text }}</p>
+    </nz-card>
+  </div>
+  <div class="pagination">
+    <nz-pagination
+      [nzPageIndex]="query.page"
+      [nzTotal]="maxPages * 10"
+      (nzPageIndexChange)="onPageChange($event)"
+    ></nz-pagination>
+  </div>
+</ng-container>

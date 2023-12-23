@@ -54,8 +54,10 @@ export class TasksPageComponent implements OnInit {
 
   public isVisible: boolean = false;
   public isCreating: boolean = false;
+  public isFetching: boolean = false;
 
   public ngOnInit(): void {
+    this.isFetching = true;
     this.route.queryParams
       .pipe(
         tap((params) => {
@@ -66,10 +68,13 @@ export class TasksPageComponent implements OnInit {
         switchMap(() => this.fetchTasks()),
         untilDestroyed(this)
       )
-      .subscribe();
+      .subscribe(() => {
+        this.isFetching = false;
+      });
   }
 
   public onPageChange(page: number): void {
+    console.warn("page change", page, this.query.page);
     this.query.page = page;
     this.router.navigate([], { relativeTo: this.route, queryParams: this.query, queryParamsHandling: "merge" });
   }
