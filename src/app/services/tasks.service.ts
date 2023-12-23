@@ -14,7 +14,7 @@ export class TasksService {
     return this.http.get<ApiFetchTasksResponse>(`${API_URL}/`, { params: appendDeveloper(params) }).pipe(
       map((response) => ({
         tasks: response.message.tasks,
-        count: response.message.total_task_count,
+        count: Number(response.message.total_task_count),
       }))
     );
   }
