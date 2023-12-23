@@ -31,6 +31,19 @@
     display: flex;
     justify-content: space-between;
     width: 45%;
+
+    .tasks-header-controls {
+      display: flex;
+      align-items: flex-end;
+
+      .sort {
+        width: 196px;
+
+        nz-select {
+          width: 100%;
+        }
+      }
+    }
   }
 
   .tasks {
@@ -41,6 +54,7 @@
     height: 55%;
     width: 45%;
     overflow: auto;
+    margin-top: 8px;
 
     .task {
       position: relative;

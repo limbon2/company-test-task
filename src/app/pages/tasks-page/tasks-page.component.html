@@ -59,9 +59,25 @@
   <div class="tasks-wrapper">
     <div class="tasks-header">
       <h2>Задачи</h2>
-      <button nz-button [nzType]="'primary'" (click)="showCreateModal()" [disabled]="isFetchingTasks">
-        <span>Добавить +</span>
-      </button>
+
+      <div class="tasks-header-controls">
+        <div class="sort">
+          <label>Сортировать по</label>
+          <nz-select [ngModel]="query.sort_field" (ngModelChange)="onSortChange($event)">
+            <nz-option nzValue="id" nzLabel="ID"></nz-option>
+            <nz-option nzValue="username" nzLabel="Имя пользователя"></nz-option>
+            <nz-option nzValue="email" nzLabel="Email"></nz-option>
+            <nz-option nzValue="status" nzLabel="Статус"></nz-option>
+          </nz-select>
+        </div>
+        <button nz-button (click)="onSortDirectionChange()">
+          <span *ngIf="query.sort_direction === 'asc'" nz-icon nzType="up"></span>
+          <span *ngIf="query.sort_direction === 'desc'" nz-icon nzType="down"></span>
+        </button>
+        <button nz-button [nzType]="'primary'" (click)="showCreateModal()" [disabled]="isFetchingTasks">
+          <span>Добавить +</span>
+        </button>
+      </div>
     </div>
     <div class="tasks">
       <ng-container *ngFor="let task of tasks">

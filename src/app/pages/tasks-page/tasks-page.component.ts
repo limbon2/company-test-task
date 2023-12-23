@@ -1,6 +1,6 @@
 import { CommonModule } from "@angular/common";
 import { Component, OnInit, inject } from "@angular/core";
-import { FormBuilder, ReactiveFormsModule, Validators } from "@angular/forms";
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterModule } from "@angular/router";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { NzCardModule } from "ng-zorro-antd/card";
@@ -29,6 +29,7 @@ import { AuthService } from "src/app/services/auth.service";
     CommonModule,
     RouterModule,
     ReactiveFormsModule,
+    FormsModule,
     NzCardModule,
     NzFormModule,
     NzPaginationModule,
@@ -76,7 +77,7 @@ export class TasksPageComponent implements OnInit {
       .pipe(
         tap((params) => {
           this.query.page = Number(params["page"]) || 1;
-          this.query.sort_direction = params["sort_direction"];
+          this.query.sort_direction = params["sort_direction"] ?? "desc";
           this.query.sort_field = params["sort_field"];
         }),
         switchMap(() => this.fetchTasks()),
@@ -89,6 +90,16 @@ export class TasksPageComponent implements OnInit {
 
   public onPageChange(page: number): void {
     this.query.page = page;
+    this.router.navigate([], { relativeTo: this.route, queryParams: this.query, queryParamsHandling: "merge" });
+  }
+
+  public onSortChange(value: ApiFetchTasksQueryParams["sort_field"]): void {
+    this.query.sort_field = value;
+    this.router.navigate([], { relativeTo: this.route, queryParams: this.query, queryParamsHandling: "merge" });
+  }
+
+  public onSortDirectionChange(): void {
+    this.query.sort_direction = this.query.sort_direction === "asc" ? "desc" : "asc";
     this.router.navigate([], { relativeTo: this.route, queryParams: this.query, queryParamsHandling: "merge" });
   }
 
