@@ -9,11 +9,13 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzModalModule } from "ng-zorro-antd/modal";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
+import { NzSelectModule } from "ng-zorro-antd/select";
+import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
 import { Observable, switchMap, tap } from "rxjs";
 import { MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
-import { CreateTaskData, Task } from "src/app/models/task.model";
+import { CreateTaskData, Task, TaskStatus, UpdateTaskData } from "src/app/models/task.model";
 import { TasksService } from "src/app/services/tasks.service";
 import { AuthService } from "src/app/services/auth.service";
 
@@ -34,6 +36,8 @@ import { AuthService } from "src/app/services/auth.service";
     NzButtonModule,
     NzModalModule,
     NzSkeletonModule,
+    NzIconModule,
+    NzSelectModule,
   ],
 })
 export class TasksPageComponent implements OnInit {
@@ -53,16 +57,19 @@ export class TasksPageComponent implements OnInit {
     text: this.fb.control("", { validators: [Validators.required] }),
     email: this.fb.control("", { validators: [Validators.required, Validators.email] }),
     username: this.fb.control("", { validators: [Validators.required] }),
+    status: this.fb.control(null as TaskStatus | null),
   });
 
   public maxPages: number = 0;
 
-  public isVisible: boolean = false;
-  public isCreating: boolean = false;
-  public isFetching: boolean = false;
+  public editingTaskId: number | null = null;
+
+  public isFetchingTasks: boolean = false;
+  public isFormShown: boolean = false;
+  public isProcessingTask: boolean = false;
 
   public ngOnInit(): void {
-    this.isFetching = true;
+    this.isFetchingTasks = true;
     this.route.queryParams
       .pipe(
         tap((params) => {
@@ -74,12 +81,11 @@ export class TasksPageComponent implements OnInit {
         untilDestroyed(this)
       )
       .subscribe(() => {
-        this.isFetching = false;
+        this.isFetchingTasks = false;
       });
   }
 
   public onPageChange(page: number): void {
-    console.warn("page change", page, this.query.page);
     this.query.page = page;
     this.router.navigate([], { relativeTo: this.route, queryParams: this.query, queryParamsHandling: "merge" });
   }
@@ -95,13 +101,9 @@ export class TasksPageComponent implements OnInit {
     );
   }
 
-  public showModal(): void {
-    this.isVisible = true;
-  }
-
   public createTask(): void {
     if (this.taskForm.valid) {
-      this.isCreating = true;
+      this.isProcessingTask = true;
       this.tasksService
         .createTask(this.taskForm.value as CreateTaskData)
         .pipe(
@@ -109,13 +111,46 @@ export class TasksPageComponent implements OnInit {
           untilDestroyed(this)
         )
         .subscribe(() => {
-          this.isCreating = false;
-          this.isVisible = false;
+          this.isProcessingTask = false;
+          this.isFormShown = false;
+        });
+    }
+  }
+
+  public updateTask(): void {
+    if (this.taskForm.valid && this.editingTaskId) {
+      this.isProcessingTask = true;
+      this.tasksService
+        .updateTask(this.editingTaskId, this.taskForm.value as UpdateTaskData)
+        .pipe(
+          switchMap(() => this.fetchTasks()),
+          untilDestroyed(this)
+        )
+        .subscribe(() => {
+          this.isProcessingTask = false;
+          this.isFormShown = false;
         });
     }
   }
 
   public handleCancel(): void {
-    this.isVisible = false;
+    this.isFormShown = false;
+  }
+
+  public showCreateModal(): void {
+    this.taskForm.reset();
+    this.isFormShown = true;
+  }
+
+  public showEditModal(task: Task): void {
+    this.editingTaskId = task.id;
+
+    this.taskForm.reset();
+    this.taskForm.setValue({ email: task.email, text: task.text, username: task.username, status: task.status });
+
+    this.taskForm.controls.email.disable();
+    this.taskForm.controls.username.disable();
+
+    this.isFormShown = true;
   }
 }

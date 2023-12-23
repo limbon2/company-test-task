@@ -8,7 +8,6 @@ import { NZ_I18N } from "ng-zorro-antd/i18n";
 import { ru_RU } from "ng-zorro-antd/i18n";
 import ru from "@angular/common/locales/ru";
 
-import { AuthInterceptor } from "./interceptors/auth.interceptor";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 
@@ -17,10 +16,7 @@ registerLocaleData(ru);
 @NgModule({
   declarations: [AppComponent],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule, BrowserAnimationsModule],
-  providers: [
-    { provide: NZ_I18N, useValue: ru_RU },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-  ],
+  providers: [{ provide: NZ_I18N, useValue: ru_RU }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

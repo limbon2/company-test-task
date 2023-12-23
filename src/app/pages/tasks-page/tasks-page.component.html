@@ -1,10 +1,10 @@
 <nz-modal
-  nzTitle="Новая задача"
-  nzOkText="Создать"
-  [(nzVisible)]="isVisible"
+  [nzTitle]="!!editingTaskId ? 'Редактировать задачу' : 'Новая задача'"
+  [nzOkText]="!!editingTaskId ? 'Обновить' : 'Создать'"
+  [(nzVisible)]="isFormShown"
   (nzOnCancel)="handleCancel()"
-  (nzOnOk)="createTask()"
-  [nzOkLoading]="isCreating"
+  (nzOnOk)="!!editingTaskId ? updateTask() : createTask()"
+  [nzOkLoading]="isProcessingTask"
 >
   <ng-container *nzModalContent>
     <div class="form">
@@ -27,6 +27,15 @@
             <textarea nz-input formControlName="text" id="text" placeholder="Введите текст задачи"></textarea>
           </nz-form-control>
         </nz-form-item>
+        <nz-form-item *ngIf="!!editingTaskId">
+          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="">Завершено</nz-form-label>
+          <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
+            <nz-select formControlName="status">
+              <nz-option [nzValue]="0" nzLabel="Не завершено"></nz-option>
+              <nz-option [nzValue]="10" nzLabel="Завершено"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
       </form>
     </div>
   </ng-container>
@@ -42,7 +51,7 @@
   <div class="tasks-wrapper">
     <div class="tasks-header">
       <h2>Задачи</h2>
-      <button nz-button [nzType]="'primary'" (click)="showModal()" [disabled]="isFetching">
+      <button nz-button [nzType]="'primary'" (click)="showCreateModal()" [disabled]="isFetchingTasks">
         <span>Добавить +</span>
       </button>
     </div>
@@ -50,13 +59,16 @@
       <ng-container *ngFor="let task of tasks">
         <nz-card class="task" [nzTitle]="task.username" [nzExtra]="task.email">
           <p>{{ task.text }}</p>
+          <button class="task-edit" nz-button nzType="link" title="Редактировать" (click)="showEditModal(task)">
+            <span nz-icon nzType="edit"></span>
+          </button>
         </nz-card>
       </ng-container>
-      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
-      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
-      <nz-skeleton *ngIf="isFetching" [nzActive]="true"></nz-skeleton>
+      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
+      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
+      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
     </div>
-    <div class="pagination" *ngIf="!isFetching">
+    <div class="pagination" *ngIf="!isFetchingTasks">
       <nz-pagination
         [nzPageIndex]="query.page"
         [nzTotal]="maxPages * 10"

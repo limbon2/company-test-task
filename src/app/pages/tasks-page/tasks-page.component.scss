@@ -26,32 +26,39 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-}
 
-.tasks-header {
-  display: flex;
-  justify-content: space-between;
-  width: 45%;
-}
-
-.tasks {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  height: 55%;
-  width: 45%;
-  overflow: auto;
-
-  .task {
-    width: 100%;
+  .tasks-header {
+    display: flex;
+    justify-content: space-between;
+    width: 45%;
   }
-}
 
-.pagination {
-  display: flex;
-  justify-content: center;
-  margin-top: 8px;
+  .tasks {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    height: 55%;
+    width: 45%;
+    overflow: auto;
+
+    .task {
+      position: relative;
+      width: 100%;
+
+      .task-edit {
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+      }
+    }
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 8px;
+  }
 }
 
 .form {

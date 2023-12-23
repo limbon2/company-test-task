@@ -18,3 +18,8 @@ export type CreateTaskData = {
   email: string;
   text: string;
 };
+
+export type UpdateTaskData = {
+  text: string;
+  status: TaskStatus;
+};
