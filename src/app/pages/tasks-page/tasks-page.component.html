@@ -31,8 +31,16 @@
           <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="">Завершено</nz-form-label>
           <nz-form-control [nzSm]="14" [nzXs]="24" nzErrorTip="The input is not valid E-mail!">
             <nz-select formControlName="status">
-              <nz-option [nzValue]="0" nzLabel="Не завершено"></nz-option>
-              <nz-option [nzValue]="10" nzLabel="Завершено"></nz-option>
+              <nz-option [nzValue]="taskStatuses.Incomplete" nzLabel="Не выполнено"></nz-option>
+              <nz-option
+                [nzValue]="taskStatuses.IncompleteAdminEdit"
+                nzLabel="Не выполнено. Отредактировано администратором"
+              ></nz-option>
+              <nz-option [nzValue]="taskStatuses.Complete" nzLabel="Выполнено"></nz-option>
+              <nz-option
+                [nzValue]="taskStatuses.CompleteAdminEdit"
+                nzLabel="Выполнено. Отредактировано администратором"
+              ></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -57,9 +65,27 @@
     </div>
     <div class="tasks">
       <ng-container *ngFor="let task of tasks">
-        <nz-card class="task" [nzTitle]="task.username" [nzExtra]="task.email">
+        <nz-card
+          class="task"
+          [class.complete]="task.status === taskStatuses.Complete || task.status === taskStatuses.CompleteAdminEdit"
+          [nzTitle]="task.username"
+          [nzExtra]="task.email"
+        >
           <p>{{ task.text }}</p>
-          <button class="task-edit" nz-button nzType="link" title="Редактировать" (click)="showEditModal(task)">
+          <span
+            class="admin-edit-text"
+            *ngIf="task.status === taskStatuses.CompleteAdminEdit || task.status === taskStatuses.IncompleteAdminEdit"
+          >
+            Отредактировано администратором
+          </span>
+          <button
+            *ngIf="!!authService.token"
+            class="task-edit"
+            nz-button
+            nzType="link"
+            title="Редактировать"
+            (click)="showEditModal(task)"
+          >
             <span nz-icon nzType="edit"></span>
           </button>
         </nz-card>

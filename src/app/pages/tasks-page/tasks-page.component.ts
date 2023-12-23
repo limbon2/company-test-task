@@ -41,6 +41,8 @@ import { AuthService } from "src/app/services/auth.service";
   ],
 })
 export class TasksPageComponent implements OnInit {
+  public readonly taskStatuses = TaskStatus;
+
   private readonly tasksService = inject(TasksService);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
@@ -127,6 +129,7 @@ export class TasksPageComponent implements OnInit {
           untilDestroyed(this)
         )
         .subscribe(() => {
+          this.editingTaskId = null;
           this.isProcessingTask = false;
           this.isFormShown = false;
         });
@@ -135,10 +138,13 @@ export class TasksPageComponent implements OnInit {
 
   public handleCancel(): void {
     this.isFormShown = false;
+    this.editingTaskId = null;
   }
 
   public showCreateModal(): void {
     this.taskForm.reset();
+    this.taskForm.controls.email.enable();
+    this.taskForm.controls.username.enable();
     this.isFormShown = true;
   }
 
