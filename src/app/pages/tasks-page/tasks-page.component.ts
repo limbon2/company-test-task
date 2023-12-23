@@ -9,6 +9,7 @@ import { NzInputModule } from "ng-zorro-antd/input";
 import { NzModalModule } from "ng-zorro-antd/modal";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzSkeletonModule } from "ng-zorro-antd/skeleton";
+import { NzNotificationModule, NzNotificationService } from "ng-zorro-antd/notification";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
@@ -39,6 +40,7 @@ import { AuthService } from "src/app/services/auth.service";
     NzSkeletonModule,
     NzIconModule,
     NzSelectModule,
+    NzNotificationModule,
   ],
 })
 export class TasksPageComponent implements OnInit {
@@ -48,6 +50,7 @@ export class TasksPageComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NzNotificationService);
 
   public readonly authService = inject(AuthService);
 
@@ -126,6 +129,8 @@ export class TasksPageComponent implements OnInit {
         .subscribe(() => {
           this.isProcessingTask = false;
           this.isFormShown = false;
+
+          this.notifications.create("success", "Успех!", "Задача успешно создана");
         });
     }
   }
@@ -143,6 +148,8 @@ export class TasksPageComponent implements OnInit {
           this.editingTaskId = null;
           this.isProcessingTask = false;
           this.isFormShown = false;
+
+          this.notifications.create("success", "Успех!", "Задача успешно обновлена");
         });
     }
   }
