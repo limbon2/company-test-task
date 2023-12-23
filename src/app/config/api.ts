@@ -6,5 +6,6 @@ export const ERRORS_MESSAGES: Record<string, Record<string, string>> = {
   ru: {
     required: "Поле не должно быть пустым",
     email: "Не корректный email адрес",
+    password: "Неверное имя пользователя или пароль",
   },
 };

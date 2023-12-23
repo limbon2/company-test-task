@@ -41,8 +41,13 @@ export class LoginPageComponent {
       this.authService
         .login(this.loginForm.value as ApiLoginData)
         .pipe(
-          catchError((err) => {
+          catchError((response) => {
             this.isLoggingIn = false;
+            if (response.error) {
+              for (const key in response.error) {
+                this.loginForm.get(key)?.setErrors({ [key]: true });
+              }
+            }
             return EMPTY;
           }),
           untilDestroyed(this)

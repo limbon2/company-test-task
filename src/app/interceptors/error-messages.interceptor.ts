@@ -6,22 +6,18 @@ import {
   HttpRequest,
   HttpResponse,
 } from "@angular/common/http";
-import { Injectable, inject } from "@angular/core";
-import { Observable, map, tap } from "rxjs";
-import { NzNotificationService } from "ng-zorro-antd/notification";
+import { Injectable } from "@angular/core";
+import { Observable, map } from "rxjs";
 
 @Injectable()
 export class ErrorMessagesInterceptor implements HttpInterceptor {
-  private readonly notifications = inject(NzNotificationService);
-
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       map((response) => {
         if (response instanceof HttpResponse) {
           if (response.body.status !== "ok") {
-            this.notifications.error("Ошибка 😟", "Что то пошло не так");
             throw new HttpErrorResponse({
-              error: JSON.stringify(response.body),
+              error: response.body.message,
               headers: response.headers,
               url: response.url ?? "",
             });
