@@ -1,0 +1,37 @@
+<div class="form">
+  <form nz-form [nzAutoTips]="errorMessages" [formGroup]="taskForm" nzLayout="vertical">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">Email</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="email" id="email" placeholder="Введите email" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="username">Пользователь</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="username" id="username" placeholder="Введите имя пользователя" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="text">Текст</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea nz-input formControlName="text" id="text" placeholder="Введите текст задачи"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="!!task?.id">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="status">Завершено</nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select formControlName="status">
+          <nz-option [nzValue]="taskStatuses.Incomplete" nzLabel="Не выполнено"></nz-option>
+          <nz-option [nzValue]="taskStatuses.Complete" nzLabel="Выполнено"></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-button-group class="form-buttons">
+      <button nz-button (click)="close()" [disabled]="isProcessing">Отмена</button>
+      <button nz-button nzType="primary" (click)="task ? updateTask() : createTask()" [nzLoading]="isProcessing">
+        {{ task ? "Обновить" : "Добавить" }}
+      </button>
+    </nz-button-group>
+  </form>
+</div>

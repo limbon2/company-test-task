@@ -1,0 +1,24 @@
+<nz-card
+  class="task"
+  [class.complete]="task.status === taskStatuses.Complete || task.status === taskStatuses.CompleteAdminEdit"
+  [nzTitle]="task.username"
+  [nzExtra]="task.email"
+>
+  <p>{{ task.text }}</p>
+  <span
+    class="admin-edit-text"
+    *ngIf="task.status === taskStatuses.CompleteAdminEdit || task.status === taskStatuses.IncompleteAdminEdit"
+  >
+    Отредактировано администратором
+  </span>
+  <button
+    *ngIf="isLoggedIn"
+    class="task-edit"
+    nz-button
+    nzType="link"
+    title="Редактировать"
+    (click)="taskFormOpen.emit(task)"
+  >
+    <span nz-icon nzType="edit"></span>
+  </button>
+</nz-card>

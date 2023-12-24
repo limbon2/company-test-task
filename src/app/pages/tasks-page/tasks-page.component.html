@@ -1,113 +1,44 @@
-<nz-modal
-  [nzTitle]="!!editingTaskId ? 'Редактировать задачу' : 'Новая задача'"
-  [nzOkText]="!!editingTaskId ? 'Обновить' : 'Создать'"
-  [(nzVisible)]="isFormShown"
-  (nzOnCancel)="handleCancel()"
-  (nzOnOk)="!!editingTaskId ? updateTask() : createTask()"
-  [nzOkLoading]="isProcessingTask"
->
-  <ng-container *nzModalContent>
-    <div class="form">
-      <form nz-form [nzAutoTips]="errorMessages" [formGroup]="taskForm" nzLayout="vertical">
-        <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="email">Email</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <input nz-input formControlName="email" id="email" placeholder="Введите email" />
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="username">Пользователь</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <input nz-input formControlName="username" id="username" placeholder="Введите имя пользователя" />
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item>
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="text">Текст</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <textarea nz-input formControlName="text" id="text" placeholder="Введите текст задачи"></textarea>
-          </nz-form-control>
-        </nz-form-item>
-        <nz-form-item *ngIf="!!editingTaskId">
-          <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="status">Завершено</nz-form-label>
-          <nz-form-control [nzSm]="14" [nzXs]="24">
-            <nz-select formControlName="status">
-              <nz-option [nzValue]="taskStatuses.Incomplete" nzLabel="Не выполнено"></nz-option>
-              <nz-option [nzValue]="taskStatuses.Complete" nzLabel="Выполнено"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </form>
-    </div>
-  </ng-container>
-</nz-modal>
+<ta-header></ta-header>
 
-<div class="header">
-  <h1>Poormans Task Board</h1>
-  <button *ngIf="!isLoggedIn" nz-button routerLink="login">Войти</button>
-  <button *ngIf="isLoggedIn" nz-button (click)="logout()">Выйти</button>
-</div>
-
-<ng-container>
-  <div class="tasks-wrapper">
-    <div class="tasks-header">
-      <h2>Задачи</h2>
-
-      <div class="tasks-header-controls">
-        <div class="sort">
-          <label>Сортировать по</label>
-          <nz-select [ngModel]="query.sort_field" (ngModelChange)="onSortChange($event)">
-            <nz-option nzValue="id" nzLabel="ID"></nz-option>
-            <nz-option nzValue="username" nzLabel="Имя пользователя"></nz-option>
-            <nz-option nzValue="email" nzLabel="Email"></nz-option>
-            <nz-option nzValue="status" nzLabel="Статус"></nz-option>
-          </nz-select>
-        </div>
-        <button nz-button (click)="onSortDirectionChange()">
-          <span *ngIf="query.sort_direction === 'asc'" nz-icon nzType="sort-ascending"></span>
-          <span *ngIf="query.sort_direction === 'desc'" nz-icon nzType="sort-descending"></span>
-        </button>
-        <button nz-button [nzType]="'primary'" (click)="showCreateModal()" [disabled]="isFetchingTasks">
-          <span>Добавить +</span>
-        </button>
+<div class="tasks-wrapper">
+  <div class="tasks-header">
+    <h2>Задачи</h2>
+    <div class="tasks-header-controls">
+      <div class="sort">
+        <label>Сортировать по</label>
+        <nz-select [ngModel]="query.sort_field" (ngModelChange)="onQueryChange('sort_field', $event)">
+          <nz-option nzValue="id" nzLabel="ID"></nz-option>
+          <nz-option nzValue="username" nzLabel="Имя пользователя"></nz-option>
+          <nz-option nzValue="email" nzLabel="Email"></nz-option>
+          <nz-option nzValue="status" nzLabel="Статус"></nz-option>
+        </nz-select>
       </div>
-    </div>
-    <div class="tasks">
-      <ng-container *ngFor="let task of tasks">
-        <nz-card
-          class="task"
-          [class.complete]="task.status === taskStatuses.Complete || task.status === taskStatuses.CompleteAdminEdit"
-          [nzTitle]="task.username"
-          [nzExtra]="task.email"
-        >
-          <p>{{ task.text }}</p>
-          <span
-            class="admin-edit-text"
-            *ngIf="task.status === taskStatuses.CompleteAdminEdit || task.status === taskStatuses.IncompleteAdminEdit"
-          >
-            Отредактировано администратором
-          </span>
-          <button
-            *ngIf="isLoggedIn"
-            class="task-edit"
-            nz-button
-            nzType="link"
-            title="Редактировать"
-            (click)="showEditModal(task)"
-          >
-            <span nz-icon nzType="edit"></span>
-          </button>
-        </nz-card>
-      </ng-container>
-      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
-      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
-      <nz-skeleton *ngIf="isFetchingTasks" [nzActive]="true"></nz-skeleton>
-    </div>
-    <div class="pagination" *ngIf="!isFetchingTasks">
-      <nz-pagination
-        [nzPageIndex]="query.page"
-        [nzTotal]="maxPages * 10"
-        (nzPageIndexChange)="onPageChange($event)"
-      ></nz-pagination>
+      <button *ngIf="query.sort_direction === 'asc'" nz-button (click)="onQueryChange('sort_direction', 'desc')">
+        <span nz-icon nzType="sort-ascending"></span>
+      </button>
+      <button *ngIf="query.sort_direction === 'desc'" nz-button (click)="onQueryChange('sort_direction', 'asc')">
+        <span nz-icon nzType="sort-descending"></span>
+      </button>
+      <button nz-button [nzType]="'primary'" (click)="openTaskForm()" [disabled]="isFetchingTasks">
+        <span>Добавить +</span>
+      </button>
     </div>
   </div>
-</ng-container>
+
+  <div class="tasks">
+    <ta-task *ngFor="let task of tasks | slice : 0 : 3" [task]="task" (taskFormOpen)="openTaskForm($event)"></ta-task>
+    <ng-container *ngIf="isFetchingTasks">
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+      <nz-skeleton [nzActive]="true"></nz-skeleton>
+    </ng-container>
+  </div>
+
+  <div class="pagination" *ngIf="!isFetchingTasks">
+    <nz-pagination
+      [nzPageIndex]="query.page"
+      [nzTotal]="maxPages * 10"
+      (nzPageIndexChange)="onQueryChange('page', $event)"
+    ></nz-pagination>
+  </div>
+</div>

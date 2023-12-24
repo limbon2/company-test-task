@@ -1,0 +1,5 @@
+<div class="header">
+  <h1>Poor Man's Task Board</h1>
+  <button *ngIf="!isLoggedIn" nz-button routerLink="login">Войти</button>
+  <button *ngIf="isLoggedIn" nz-button (click)="logout()">Выйти</button>
+</div>

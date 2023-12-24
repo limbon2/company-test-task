@@ -10,7 +10,7 @@ import { Injectable } from "@angular/core";
 import { Observable, map } from "rxjs";
 
 @Injectable()
-export class ErrorMessagesInterceptor implements HttpInterceptor {
+export class ErrorLoggerInterceptor implements HttpInterceptor {
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       map((response) => {

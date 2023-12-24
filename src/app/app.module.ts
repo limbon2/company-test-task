@@ -11,7 +11,7 @@ import ru from "@angular/common/locales/ru";
 import { AppRoutingModule } from "./app-routing.module";
 import { AppComponent } from "./app.component";
 import { DeveloperInterceptor } from "./interceptors/developer.interceptor";
-import { ErrorMessagesInterceptor } from "./interceptors/error-messages.interceptor";
+import { ErrorLoggerInterceptor } from "./interceptors/error-messages.interceptor";
 
 registerLocaleData(ru);
 
@@ -21,7 +21,7 @@ registerLocaleData(ru);
   providers: [
     { provide: NZ_I18N, useValue: ru_RU },
     { provide: HTTP_INTERCEPTORS, useClass: DeveloperInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorMessagesInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorLoggerInterceptor, multi: true },
   ],
   bootstrap: [AppComponent],
 })

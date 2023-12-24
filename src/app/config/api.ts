@@ -5,7 +5,7 @@ export const MAX_TASKS_PER_PAGE = 3;
 export const ERRORS_MESSAGES: Record<string, Record<string, string>> = {
   ru: {
     required: "Поле не должно быть пустым",
-    email: "Не корректный email адрес",
+    email: "Некорректный email адрес",
     password: "Неверное имя пользователя или пароль",
   },
 };

@@ -1,5 +1,5 @@
 import { HttpClient } from "@angular/common/http";
-import { Injectable, inject } from "@angular/core";
+import { EventEmitter, Injectable, inject } from "@angular/core";
 import { Observable, map, tap } from "rxjs";
 import { ApiLoginData, ApiLoginResponse } from "../models/api.model";
 import { API_URL } from "../config/api";
@@ -14,6 +14,8 @@ export class AuthService {
   public get token(): string | null {
     return this._token;
   }
+
+  public onLogout = new EventEmitter();
 
   constructor() {
     window.addEventListener("storage", (event) => {
@@ -40,5 +42,6 @@ export class AuthService {
   public logout(): void {
     this._token = null;
     localStorage.removeItem(this.tokenKey);
+    this.onLogout.emit();
   }
 }
