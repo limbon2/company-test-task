@@ -13,7 +13,7 @@ import { NzNotificationModule, NzNotificationService } from "ng-zorro-antd/notif
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
-import { Observable, switchMap, tap } from "rxjs";
+import { EMPTY, Observable, catchError, switchMap, tap } from "rxjs";
 import { ERRORS_MESSAGES, MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
 import { CreateTaskData, Task, TaskStatus, UpdateTaskData } from "src/app/models/task.model";
@@ -49,12 +49,11 @@ export class TasksPageComponent implements OnInit {
   public readonly errorMessages = ERRORS_MESSAGES;
 
   private readonly tasksService = inject(TasksService);
+  private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly notifications = inject(NzNotificationService);
-
-  public readonly authService = inject(AuthService);
 
   public readonly query: ApiFetchTasksQueryParams = {};
 
@@ -76,8 +75,13 @@ export class TasksPageComponent implements OnInit {
   public isFormShown: boolean = false;
   public isProcessingTask: boolean = false;
 
+  public isLoggedIn: boolean = false;
+
   public ngOnInit(): void {
+    this.isLoggedIn = !!this.authService.token;
+
     this.isFetchingTasks = true;
+
     this.route.queryParams
       .pipe(
         tap((params) => {
@@ -122,6 +126,7 @@ export class TasksPageComponent implements OnInit {
   public createTask(): void {
     if (this.taskForm.valid) {
       this.isProcessingTask = true;
+
       this.tasksService
         .createTask(this.taskForm.value as CreateTaskData)
         .pipe(
@@ -142,9 +147,16 @@ export class TasksPageComponent implements OnInit {
   public updateTask(): void {
     if (this.taskForm.valid && this.editingTaskId) {
       this.isProcessingTask = true;
+
       this.tasksService
         .updateTask(this.editingTaskId, this.taskForm.value as UpdateTaskData)
         .pipe(
+          catchError((err) => {
+            console.error(err);
+            this.notifications.error("Ошибка!", "Что то пошло не так");
+            this.isProcessingTask = false;
+            return EMPTY;
+          }),
           switchMap(() => this.fetchTasks()),
           untilDestroyed(this)
         )
@@ -182,5 +194,10 @@ export class TasksPageComponent implements OnInit {
     this.taskForm.controls.username.disable();
 
     this.isFormShown = true;
+  }
+
+  public logout(): void {
+    this.authService.logout();
+    this.isLoggedIn = false;
   }
 }

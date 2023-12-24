@@ -6,6 +6,7 @@ import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { NzInputModule } from "ng-zorro-antd/input";
+import { NzNotificationService } from "ng-zorro-antd/notification";
 import { EMPTY, catchError, of } from "rxjs";
 import { ERRORS_MESSAGES } from "src/app/config/api";
 import { ApiLoginData } from "src/app/models/api.model";
@@ -26,6 +27,7 @@ export class LoginPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly notifications = inject(NzNotificationService);
 
   public readonly loginForm = this.fb.group({
     username: this.fb.control("", { validators: [Validators.required] }),
@@ -35,6 +37,8 @@ export class LoginPageComponent {
   public isLoggingIn: boolean = false;
 
   public login(): void {
+    updateControlsValidity(this.loginForm);
+
     if (this.loginForm.valid) {
       this.isLoggingIn = true;
 
@@ -55,9 +59,8 @@ export class LoginPageComponent {
         .subscribe(() => {
           this.isLoggingIn = false;
           this.router.navigate([""]);
+          this.notifications.success("Успех!", "Вход выполнен успешно");
         });
-    } else {
-      updateControlsValidity(this.loginForm);
     }
   }
 }

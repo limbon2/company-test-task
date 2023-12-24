@@ -32,15 +32,7 @@
           <nz-form-control [nzSm]="14" [nzXs]="24">
             <nz-select formControlName="status">
               <nz-option [nzValue]="taskStatuses.Incomplete" nzLabel="Не выполнено"></nz-option>
-              <nz-option
-                [nzValue]="taskStatuses.IncompleteAdminEdit"
-                nzLabel="Не выполнено. Отредактировано администратором"
-              ></nz-option>
               <nz-option [nzValue]="taskStatuses.Complete" nzLabel="Выполнено"></nz-option>
-              <nz-option
-                [nzValue]="taskStatuses.CompleteAdminEdit"
-                nzLabel="Выполнено. Отредактировано администратором"
-              ></nz-option>
             </nz-select>
           </nz-form-control>
         </nz-form-item>
@@ -51,8 +43,8 @@
 
 <div class="header">
   <h1>Poormans Task Board</h1>
-  <button *ngIf="!authService.token" nz-button routerLink="login">Войти</button>
-  <button *ngIf="!!authService.token" nz-button (click)="authService.logout()">Выйти</button>
+  <button *ngIf="!isLoggedIn" nz-button routerLink="login">Войти</button>
+  <button *ngIf="isLoggedIn" nz-button (click)="logout()">Выйти</button>
 </div>
 
 <ng-container>
@@ -71,8 +63,8 @@
           </nz-select>
         </div>
         <button nz-button (click)="onSortDirectionChange()">
-          <span *ngIf="query.sort_direction === 'asc'" nz-icon nzType="up"></span>
-          <span *ngIf="query.sort_direction === 'desc'" nz-icon nzType="down"></span>
+          <span *ngIf="query.sort_direction === 'asc'" nz-icon nzType="sort-ascending"></span>
+          <span *ngIf="query.sort_direction === 'desc'" nz-icon nzType="sort-descending"></span>
         </button>
         <button nz-button [nzType]="'primary'" (click)="showCreateModal()" [disabled]="isFetchingTasks">
           <span>Добавить +</span>
@@ -95,7 +87,7 @@
             Отредактировано администратором
           </span>
           <button
-            *ngIf="!!authService.token"
+            *ngIf="isLoggedIn"
             class="task-edit"
             nz-button
             nzType="link"
