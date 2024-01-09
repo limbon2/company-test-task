@@ -11,7 +11,7 @@ import { NzNotificationModule } from "ng-zorro-antd/notification";
 import { NzSelectModule } from "ng-zorro-antd/select";
 import { NzIconModule } from "ng-zorro-antd/icon";
 import { NzPaginationModule } from "ng-zorro-antd/pagination";
-import { EMPTY, Observable, switchMap, tap } from "rxjs";
+import { Observable, switchMap, tap } from "rxjs";
 import { ERRORS_MESSAGES, MAX_TASKS_PER_PAGE } from "src/app/config/api";
 import { ApiFetchTasksQueryParams } from "src/app/models/api.model";
 import { Task, TaskStatus } from "src/app/models/task.model";
@@ -44,6 +44,7 @@ import { TaskComponent } from "src/app/components/task/task.component";
   ],
 })
 export class TasksPageComponent implements OnInit {
+  public readonly maxTasksPerPage = MAX_TASKS_PER_PAGE;
   public readonly taskStatuses = TaskStatus;
   public readonly errorMessages = ERRORS_MESSAGES;
 
@@ -102,7 +103,7 @@ export class TasksPageComponent implements OnInit {
         if (index !== -1) {
           this.tasks[index] = task;
         } else {
-          const shouldIncrementPageCount = this.tasks.length % MAX_TASKS_PER_PAGE === 0;
+          const shouldIncrementPageCount = this.tasks.length % this.maxTasksPerPage === 0;
           if (shouldIncrementPageCount) {
             this.maxPages += 1;
           }
@@ -118,7 +119,7 @@ export class TasksPageComponent implements OnInit {
         this.tasks = result.tasks;
         this.taskCount = result.count;
 
-        this.maxPages = Math.ceil(this.taskCount / MAX_TASKS_PER_PAGE);
+        this.maxPages = Math.ceil(this.taskCount / this.maxTasksPerPage);
       })
     );
   }

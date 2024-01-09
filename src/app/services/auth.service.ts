@@ -9,7 +9,7 @@ export class AuthService {
   private readonly tokenKey = "test-app/token";
 
   private readonly http = inject(HttpClient);
-  private _token: string | null = localStorage.getItem("test-app/token");
+  private _token: string | null = localStorage.getItem(this.tokenKey);
 
   public get token(): string | null {
     return this._token;

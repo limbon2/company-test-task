@@ -26,7 +26,8 @@
   </div>
 
   <div class="tasks">
-    <ta-task *ngFor="let task of tasks | slice : 0 : 3" [task]="task" (taskFormOpen)="openTaskForm($event)"></ta-task>
+    <ta-task *ngFor="let task of tasks | slice : 0 : maxTasksPerPage" [task]="task"
+      (taskFormOpen)="openTaskForm($event)"></ta-task>
     <ng-container *ngIf="isFetchingTasks">
       <nz-skeleton [nzActive]="true"></nz-skeleton>
       <nz-skeleton [nzActive]="true"></nz-skeleton>
@@ -35,10 +36,7 @@
   </div>
 
   <div class="pagination" *ngIf="!isFetchingTasks">
-    <nz-pagination
-      [nzPageIndex]="query.page"
-      [nzTotal]="maxPages * 10"
-      (nzPageIndexChange)="onQueryChange('page', $event)"
-    ></nz-pagination>
+    <nz-pagination [nzPageIndex]="query.page" [nzTotal]="maxPages * 10"
+      (nzPageIndexChange)="onQueryChange('page', $event)"></nz-pagination>
   </div>
 </div>

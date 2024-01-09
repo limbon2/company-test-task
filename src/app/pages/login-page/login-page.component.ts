@@ -7,7 +7,7 @@ import { NzButtonModule } from "ng-zorro-antd/button";
 import { NzFormModule } from "ng-zorro-antd/form";
 import { NzInputModule } from "ng-zorro-antd/input";
 import { NzNotificationService } from "ng-zorro-antd/notification";
-import { EMPTY, catchError, of } from "rxjs";
+import { EMPTY, catchError } from "rxjs";
 import { ERRORS_MESSAGES } from "src/app/config/api";
 import { ApiLoginData } from "src/app/models/api.model";
 import { AuthService } from "src/app/services/auth.service";
@@ -15,7 +15,7 @@ import { updateControlsValidity } from "src/app/utils/update-controls-validity";
 
 @UntilDestroy()
 @Component({
-  selector: "login-page",
+  selector: "ta-login-page",
   templateUrl: "./login-page.component.html",
   styleUrls: ["./login-page.component.scss"],
   standalone: true,
